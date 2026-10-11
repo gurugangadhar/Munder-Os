@@ -26,7 +26,8 @@ config/credentials/
 # Temporary Assets & Artifacts
 test_speech.mp3
 test_render.mp4
-tools/ffmpeg/
+tools/
+*.exe
 
 # Legacy Archive
 _archive_legacy_digest/
