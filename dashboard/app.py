@@ -193,6 +193,89 @@ def api_latest_video():
     return {"error": "No video produced yet"}
 
 
+from core.publishing import PublishingManager
+from core.models import PlatformType, AssetManifest, ScriptPackage
+
+publishing_mgr = PublishingManager(db=db)
+
+
+class PublishRequest(BaseModel):
+    job_id: str
+    platform: str = "youtube"
+    dry_run: bool = True
+    privacy: str = "private"
+
+
+@app.get("/api/platforms/status")
+def api_platforms_status():
+    return publishing_mgr.get_platform_readiness()
+
+
+@app.get("/api/publications")
+def api_publications():
+    return {"publications": publishing_mgr.list_publications()}
+
+
+@app.post("/api/publish")
+def api_publish(req: PublishRequest):
+    target_video = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output", "division_a", "ai_agents_short_001.mp4"))
+    manifest_json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output", "division_a", "manifest.json"))
+    
+    m_data = {}
+    if os.path.exists(manifest_json_path):
+        try:
+            with open(manifest_json_path, "r", encoding="utf-8") as f:
+                m_data = json.load(f)
+        except Exception:
+            pass
+
+    manifest = AssetManifest(
+        job_id=req.job_id,
+        division_id=m_data.get("division_id", "div_a_tech"),
+        video_path=target_video if os.path.exists(target_video) else None,
+        qa_passed=True
+    )
+
+    script = ScriptPackage(
+        job_id=req.job_id,
+        division_id=m_data.get("division_id", "div_a_tech"),
+        title=m_data.get("title", "3 Free AI Coding Agents You Can Run 100% Locally"),
+        hook=m_data.get("hook", "Stop paying $20 a month for AI subscriptions."),
+        voiceover_lines=["Point 1", "Point 2"],
+        call_to_action="Follow for more local AI workflows.",
+        description=m_data.get("description", "Curated breakdown of free local coding agents."),
+        tags=m_data.get("tags", ["AI", "Tech", "Coding", "Shorts"]),
+        estimated_duration_seconds=50,
+        sources=["https://ollama.com", "https://continue.dev"]
+    )
+
+    plat = PlatformType(req.platform.lower()) if req.platform.lower() in [p.value for p in PlatformType] else PlatformType.YOUTUBE
+    res = publishing_mgr.publish_asset(
+        manifest=manifest,
+        script=script,
+        platform=plat,
+        dry_run=req.dry_run,
+        privacy=req.privacy
+    )
+
+    if res.success:
+        conversation_engine.log_activity(
+            "Ryan",
+            "PUBLISHED",
+            f"Exported {req.job_id} to {plat.value.title()} ({res.canonical_url})",
+            manifest.division_id
+        )
+    else:
+        conversation_engine.log_activity(
+            "Dwight",
+            "PUBLISH_REJECTED",
+            f"Publishing failed: {res.error_message}",
+            manifest.division_id
+        )
+
+    return res.model_dump()
+
+
 @app.get("/office-map", response_class=HTMLResponse)
 def get_office_map():
     map_path = os.path.join(os.path.dirname(__file__), "office_floor.html")
