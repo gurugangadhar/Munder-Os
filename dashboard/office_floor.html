@@ -725,6 +725,7 @@
                 <button id="btnTabTasks" class="tab-btn" onclick="switchTab('tasks')">📋 tasks</button>
                 <button id="btnTabMemory" class="tab-btn" onclick="switchTab('memory')">🧠 memory</button>
                 <button id="btnTabActivity" class="tab-btn" onclick="switchTab('activity')">⚡ activity</button>
+                <button id="btnTabPublish" class="tab-btn" onclick="switchTab('publish')">🚀 publish</button>
             </div>
 
             <!-- TAB 1: TERMINAL VIEWPORT -->
@@ -788,6 +789,89 @@
             <div id="tabActivity" class="tab-content">
                 <div class="activity-view" id="activityFeed">
                     <!-- Loaded dynamically via /api/activity -->
+                </div>
+            </div>
+
+            <!-- TAB 6: PUBLISH VIEWPORT -->
+            <div id="tabPublish" class="tab-content">
+                <div class="publish-view" style="padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto;">
+                    <div style="display: flex; gap: 10px;">
+                        <!-- Platform Status Cards -->
+                        <div id="platCardYoutube" style="flex: 1; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <b style="color: #ef4444; font-size: 12px;">▶ YouTube Shorts</b>
+                                <span id="ytAuthBadge" style="background: #e2e8f0; color: #475569; font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: bold;">Dry-Run Ready</span>
+                            </div>
+                            <div style="font-size: 11px; color: #64748b;" id="ytQuotaText">Quota: 0 / 10,000 units</div>
+                            <div style="font-size: 10px; color: #16a34a; margin-top: 2px;" id="ytRemainingUploads">6 uploads remaining</div>
+                        </div>
+                        
+                        <div id="platCardInstagram" style="flex: 1; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <b style="color: #ec4899; font-size: 12px;">📸 Instagram Reels</b>
+                                <span style="background: #e2e8f0; color: #475569; font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: bold;">Dry-Run Ready</span>
+                            </div>
+                            <div style="font-size: 11px; color: #64748b;">Daily Limit: 25 reels / 24h</div>
+                            <div style="font-size: 10px; color: #16a34a; margin-top: 2px;">Graph API v19.0</div>
+                        </div>
+                        
+                        <div id="platCardPinterest" style="flex: 1; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <b style="color: #b91c1c; font-size: 12px;">📌 Pinterest Pins</b>
+                                <span style="background: #e2e8f0; color: #475569; font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: bold;">Dry-Run Ready</span>
+                            </div>
+                            <div style="font-size: 11px; color: #64748b;">Rate Limit: 1,000 req/hr</div>
+                            <div style="font-size: 10px; color: #16a34a; margin-top: 2px;">Pinterest API v5</div>
+                        </div>
+                    </div>
+
+                    <!-- Publish Control Box -->
+                    <div style="background: #ffffff; border: 2px solid #0f172a; border-radius: 6px; padding: 12px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0f172a; font-size: 12px; font-family: monospace;">🚀 Dispatch Asset to Social Platform</h4>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <label style="font-size: 11px; font-weight: bold; font-family: monospace;">Platform:</label>
+                            <select id="pubPlatformSelect" class="cmd-input" style="width: 140px; padding: 4px; font-size: 11px;">
+                                <option value="youtube">YouTube Shorts</option>
+                                <option value="instagram">Instagram Reels</option>
+                                <option value="pinterest">Pinterest Pins</option>
+                            </select>
+
+                            <label style="font-size: 11px; font-weight: bold; font-family: monospace; margin-left: 6px;">Privacy:</label>
+                            <select id="pubPrivacySelect" class="cmd-input" style="width: 95px; padding: 4px; font-size: 11px;">
+                                <option value="private">Private</option>
+                                <option value="unlisted">Unlisted</option>
+                                <option value="public">Public</option>
+                            </select>
+
+                            <label style="font-size: 11px; font-weight: bold; font-family: monospace; margin-left: 6px;">
+                                <input type="checkbox" id="pubDryRunCheck" checked> Dry-Run Export
+                            </label>
+
+                            <button class="btn-action" style="background: #0284c7; padding: 5px 12px; margin-left: auto;" onclick="dispatchPublish()">
+                                🚀 Publish / Export
+                            </button>
+                        </div>
+                        <div id="pubResultBanner" style="display: none; margin-top: 8px; padding: 8px; border-radius: 4px; font-size: 11px; font-family: monospace;"></div>
+                    </div>
+
+                    <!-- Publications History Table -->
+                    <div>
+                        <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 12px; font-family: monospace;">📋 Official Publications &amp; Export History</h4>
+                        <table class="task-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Platform</th>
+                                    <th>Item ID</th>
+                                    <th>Privacy</th>
+                                    <th>Canonical Link</th>
+                                </tr>
+                            </thead>
+                            <tbody id="publicationsTableBody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -952,7 +1036,7 @@
 
         // ─── TAB SWITCHING ──────────────────────────────────────────────────────────
         function switchTab(tabId) {
-            const tabs = ['terminal', 'workers', 'tasks', 'memory', 'activity'];
+            const tabs = ['terminal', 'workers', 'tasks', 'memory', 'activity', 'publish'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`btnTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
                 const content = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
@@ -970,6 +1054,85 @@
             if (tabId === 'tasks') loadTasks();
             if (tabId === 'memory') loadMemory();
             if (tabId === 'activity') loadActivity();
+            if (tabId === 'publish') loadPublishTab();
+        }
+
+        // ─── TAB 6: LOAD PUBLISHING ────────────────────────────────────────────────
+        async function loadPublishTab() {
+            try {
+                // Load platform readiness & quotas
+                const rPlat = await fetch('/api/platforms/status');
+                const platData = await rPlat.json();
+                if (platData.youtube) {
+                    const yt = platData.youtube;
+                    document.getElementById('ytAuthBadge').textContent = yt.mode;
+                    document.getElementById('ytQuotaText').textContent = `Quota: ${yt.quota.consumed || 0} / ${yt.quota.limit} units`;
+                    document.getElementById('ytRemainingUploads').textContent = `${yt.quota.max_uploads_remaining || 6} uploads remaining today`;
+                }
+
+                // Load publications history
+                const rPubs = await fetch('/api/publications');
+                const pubsData = await rPubs.json();
+                const tbody = document.getElementById('publicationsTableBody');
+                tbody.innerHTML = '';
+                if (pubsData.publications.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 12px;">No published assets yet. Click "Publish / Export Now" above!</td></tr>';
+                } else {
+                    pubsData.publications.forEach(p => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="color: #64748b;">${p.published_at.substring(11, 19)}</td>
+                                <td><b>${p.platform.toUpperCase()}</b></td>
+                                <td style="font-family: monospace;">${p.platform_item_id}</td>
+                                <td><span style="background: #e2e8f0; padding: 1px 6px; border-radius: 4px; font-size: 10px;">${p.privacy_status}</span></td>
+                                <td><a href="${p.canonical_url}" target="_blank" style="color: #0284c7; text-decoration: underline;">${p.canonical_url}</a></td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load publishing tab:", err);
+            }
+        }
+
+        async function dispatchPublish() {
+            const platform = document.getElementById('pubPlatformSelect').value;
+            const privacy = document.getElementById('pubPrivacySelect').value;
+            const dryRun = document.getElementById('pubDryRunCheck').checked;
+            const banner = document.getElementById('pubResultBanner');
+
+            banner.style.display = 'block';
+            banner.style.background = '#fef3c7';
+            banner.style.color = '#92400e';
+            banner.textContent = `⏳ Validating and dispatching to ${platform.toUpperCase()}...`;
+
+            try {
+                const res = await fetch('/api/publish', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        job_id: 'job_div_a_latest',
+                        platform: platform,
+                        dry_run: dryRun,
+                        privacy: privacy
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    banner.style.background = '#dcfce7';
+                    banner.style.color = '#166534';
+                    banner.innerHTML = `✅ Successfully published to <b>${data.platform.toUpperCase()}</b>!<br>Canonical URL: <a href="${data.canonical_url}" target="_blank" style="color: #0284c7; font-weight: bold;">${data.canonical_url}</a>`;
+                    loadPublishTab();
+                } else {
+                    banner.style.background = '#fee2e2';
+                    banner.style.color = '#991b1b';
+                    banner.textContent = `❌ Publishing failed: ${data.error_message}`;
+                }
+            } catch (err) {
+                banner.style.background = '#fee2e2';
+                banner.style.color = '#991b1b';
+                banner.textContent = `❌ Network error: ${err.message}`;
+            }
         }
 
         // ─── TAB 2: LOAD WORKERS ───────────────────────────────────────────────────
