@@ -1,0 +1,50 @@
+# ==============================================================================
+# MUNDER DIFFLIN — CORE SYSTEM CONFIGURATION
+# ==============================================================================
+
+system:
+  name: "Munder Difflin Business OS"
+  version: "1.0.0"
+  environment: "local-first"
+  timezone: "Asia/Kolkata"
+  supervised_mode: true           # Requires explicit human approval before external publishing
+  emergency_stop_flag: "config/emergency_stop.flag"
+
+storage:
+  data_dir: "data"
+  database_path: "data/munder_difflin.db"
+  assets_dir: "data/assets"
+  reports_dir: "data/reports"
+  products_dir: "data/products"
+  logs_dir: "data/logs"
+
+execution:
+  max_retries_per_job: 3
+  job_timeout_seconds: 600       # 10 minutes max per media generation job
+  quiet_hours:
+    enabled: true
+    start: "23:00"
+    end: "07:00"
+  daily_global_job_cap: 20
+  min_disk_free_gb: 5.0          # Auto-pause if disk space drops below this threshold
+
+llm:
+  provider: "google-genai"        # Google AI Studio Gemini Free Tier
+  default_model: "gemini-2.5-flash"
+  temperature: 0.7
+  rate_limit_rpm: 15
+
+audio:
+  default_tts_voice: "en-US-ChristopherNeural"
+  target_lufs: -14.0             # YouTube / Instagram broadcast standard
+
+video:
+  vertical:
+    width: 1080
+    height: 1920
+    fps: 30
+    max_duration_seconds: 58
+  landscape:
+    width: 1920
+    height: 1080
+    fps: 30
