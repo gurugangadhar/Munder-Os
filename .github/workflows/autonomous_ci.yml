@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Core Kernel Tests
         run: |
-          pytest tests/test_kernel.py -v
+          python -m unittest tests/test_kernel.py -v
 
       - name: Verify Multi-Agent LLM & Secrets
         env:
@@ -36,8 +36,14 @@ jobs:
         run: |
           python -c "
           import os
-          gemini_present = bool(os.environ.get('GEMINI_API_KEY'))
-          nvidia_present = bool(os.environ.get('NVIDIA_API_KEY'))
-          print(f'Gemini Secret Present: {gemini_present}')
-          print(f'NVIDIA Secret Present: {nvidia_present}')
+          gemini = os.environ.get('GEMINI_API_KEY', '')
+          nvidia = os.environ.get('NVIDIA_API_KEY', '')
+          print(f'Gemini Secret Configured: {bool(gemini)}')
+          print(f'NVIDIA Secret Configured: {bool(nvidia)}')
+          
+          # Test LLM agent generation with secret
+          from core.llm import LLMClient
+          client = LLMClient(gemini_key=gemini, nvidia_key=nvidia)
+          msg = client.agent_speak('Michael', 'Cloud verification test on GitHub Actions!')
+          print(f'Michael Scott: {msg}')
           "
