@@ -1,0 +1,185 @@
+# ==============================================================================
+# MUNDER DIFFLIN — BUSINESS DIVISION REGISTRY
+# ==============================================================================
+
+divisions:
+  - id: "div_a_tech"
+    name: "AI & Technology Media"
+    enabled: true
+    priority: 1
+    description: "Faceless educational videos about AI tools, agents, automation, and software workflows."
+    target_audience: "Developers, tech enthusiasts, knowledge workers, creators"
+    platforms:
+      - name: "youtube"
+        format: "shorts"
+        category_id: "28"        # Science & Technology
+        is_made_for_kids: false
+      - name: "instagram"
+        format: "reels"
+    publishing_schedule:
+      daily_target: 1
+      max_daily: 2
+      preferred_hours: ["10:00", "18:00"]
+    production:
+      aspect_ratio: "9:16"
+      resolution: [1080, 1920]
+      tts_voice: "en-US-ChristopherNeural"
+      font_family: "Arial"
+      primary_color: "#00E5FF"
+      background_color: "#0D1117"
+    revenue_models:
+      - "platform_ad_share"
+      - "digital_products_referral"
+      - "affiliate_links"
+
+  - id: "div_b_science"
+    name: "Science & Space Education"
+    enabled: false               # Enabled in Phase 9
+    priority: 2
+    description: "Original educational explainers about space, astronomy, physics, and scientific discoveries."
+    target_audience: "Students, science enthusiasts, lifelong learners"
+    platforms:
+      - name: "youtube"
+        format: "shorts"
+        category_id: "28"
+        is_made_for_kids: false
+      - name: "pinterest"
+        format: "infographic_pin"
+    publishing_schedule:
+      daily_target: 1
+      max_daily: 1
+      preferred_hours: ["12:00"]
+    production:
+      aspect_ratio: "9:16"
+      resolution: [1080, 1920]
+      tts_voice: "en-US-GuyNeural"
+      font_family: "Arial"
+      primary_color: "#FFD700"
+      background_color: "#05070F"
+    revenue_models:
+      - "educational_sponsorships"
+      - "print_on_demand_infographics"
+
+  - id: "div_c_kids"
+    name: "Children's Educational Animation"
+    enabled: false               # Enabled in Phase 9
+    priority: 3
+    description: "Original wholesome characters, educational stories, and science lessons for young kids."
+    target_audience: "Children aged 4-8, parents, early educators"
+    platforms:
+      - name: "youtube"
+        format: "video"
+        category_id: "27"        # Education
+        is_made_for_kids: true   # Strict COPPA compliance
+    publishing_schedule:
+      daily_target: 1
+      max_daily: 1
+      preferred_hours: ["09:00"]
+    production:
+      aspect_ratio: "16:9"
+      resolution: [1920, 1080]
+      tts_voice: "en-US-AnaNeural"
+      font_family: "Arial Rounded MT Bold"
+      primary_color: "#FF6B6B"
+      background_color: "#FFFDF9"
+    revenue_models:
+      - "kids_content_ad_royalties"
+      - "printable_worksheets"
+
+  - id: "div_d_ambient"
+    name: "Ambient & Relaxing Media"
+    enabled: false               # Enabled in Phase 9
+    priority: 4
+    description: "Original study scenes, calming soundscapes, and procedural relaxing audio loops."
+    target_audience: "Remote workers, students, meditation & sleep seekers"
+    platforms:
+      - name: "youtube"
+        format: "long_form"
+        category_id: "10"        # Music
+        is_made_for_kids: false
+    publishing_schedule:
+      daily_target: 1
+      max_daily: 1
+      preferred_hours: ["21:00"]
+    production:
+      aspect_ratio: "16:9"
+      resolution: [1920, 1080]
+      tts_voice: null            # Pure procedural audio
+      font_family: "Georgia"
+      primary_color: "#A8DADC"
+      background_color: "#1D3557"
+    revenue_models:
+      - "long_form_watch_time"
+      - "ambient_sample_packs"
+
+  - id: "div_e_pinterest"
+    name: "Pinterest & Visual Distribution"
+    enabled: true                # Enabled in Phase 5 (repurposing Division A)
+    priority: 5
+    description: "Syndication engine creating high-CTR 2:3 infographic pins and cheatsheets."
+    target_audience: "Visual learners, developers, cheat-sheet seekers"
+    platforms:
+      - name: "pinterest"
+        format: "pin_2x3"
+    publishing_schedule:
+      daily_target: 2
+      max_daily: 5
+      preferred_hours: ["14:00", "20:00"]
+    production:
+      aspect_ratio: "2:3"
+      resolution: [1000, 1500]
+      tts_voice: null
+      font_family: "Arial"
+      primary_color: "#E60023"
+      background_color: "#FFFFFF"
+    revenue_models:
+      - "referral_traffic_to_storefront"
+      - "affiliate_conversions"
+
+  - id: "div_f_digital_products"
+    name: "Digital Products"
+    enabled: true                # Active for prompt packs and workflow templates
+    priority: 6
+    description: "Engineering and packaging AI workflow templates, prompt packs, and productivity planners."
+    target_audience: "Solopreneurs, creators, junior software engineers"
+    platforms:
+      - name: "storefront"
+        format: "bundle_zip"
+    publishing_schedule:
+      daily_target: 1
+      max_daily: 1
+      preferred_hours: ["17:00"]
+    production:
+      aspect_ratio: "1:1"
+      resolution: [1200, 1200]
+      tts_voice: null
+      font_family: "Helvetica"
+      primary_color: "#2A9D8F"
+      background_color: "#F4A261"
+    revenue_models:
+      - "direct_sales"
+      - "pay_what_you_want"
+
+  - id: "div_g_services"
+    name: "AI Automation Services"
+    enabled: false               # Enabled in Phase 8
+    priority: 7
+    description: "Standardized automation solutions, proposal generation, and delivery pipelines for SMBs."
+    target_audience: "Small business owners, boutique marketing agencies"
+    platforms:
+      - name: "b2b_crm"
+        format: "sow_pdf"
+    publishing_schedule:
+      daily_target: 0
+      max_daily: 1
+      preferred_hours: ["11:00"]
+    production:
+      aspect_ratio: "a4"
+      resolution: [2480, 3508]
+      tts_voice: null
+      font_family: "Times New Roman"
+      primary_color: "#264653"
+      background_color: "#FFFFFF"
+    revenue_models:
+      - "client_retainers"
+      - "project_setup_fees"
