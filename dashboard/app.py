@@ -7,7 +7,7 @@ Accessible locally at http://127.0.0.1:8000
 import sys
 import os
 
-# Ensure truststore SSL bridge and project root
+import json
 import truststore
 truststore.inject_into_ssl()
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -31,9 +31,38 @@ registry = DivisionRegistry(db=db)
 queue = JobQueue(db=db)
 orchestrator = Orchestrator(db=db, queue=queue, registry=registry)
 
+from core.agents.conversation import ConversationEngine
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message: str
+
+conversation_engine = ConversationEngine(orchestrator=orchestrator, db=db, queue=queue)
+
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+@app.post("/api/chat")
+def api_chat(req: ChatRequest):
+    return conversation_engine.process_message(req.message)
+
+
+@app.post("/api/produce")
+def api_produce():
+    return conversation_engine.process_message("produce video")
+
+
+@app.get("/api/latest-video")
+def api_latest_video():
+    manifest_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output", "division_a", "manifest.json"))
+    if os.path.exists(manifest_path):
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            data["stream_url"] = "/static/output/ai_agents_short_001.mp4"
+            return data
+    return {"error": "No video produced yet"}
 
 
 @app.get("/office-map", response_class=HTMLResponse)
