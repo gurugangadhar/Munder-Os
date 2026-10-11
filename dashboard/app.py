@@ -23,11 +23,17 @@ from core.queue import JobQueue
 from core.orchestrator import Orchestrator
 from core.models import JobStatus
 
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI(title="Munder Difflin Business OS")
 db = Database()
 registry = DivisionRegistry(db=db)
 queue = JobQueue(db=db)
 orchestrator = Orchestrator(db=db, queue=queue, registry=registry)
+
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/office-map", response_class=HTMLResponse)
@@ -40,6 +46,11 @@ def get_office_map():
 
 
 @app.get("/", response_class=HTMLResponse)
+def get_dashboard_root():
+    return get_office_map()
+
+
+@app.get("/classic", response_class=HTMLResponse)
 def get_dashboard(request: Request):
     health = orchestrator.check_system_health()
     divisions = registry.get_all_divisions()
