@@ -42,6 +42,13 @@ TRACKED_FILES = [
     "core/media/compositor.py",
     "core/media/qa.py",
     "core/media/pipeline.py",
+    "core/publishing/__init__.py",
+    "core/publishing/base.py",
+    "core/publishing/validator.py",
+    "core/publishing/youtube.py",
+    "core/publishing/instagram.py",
+    "core/publishing/pinterest.py",
+    "core/publishing/manager.py",
     "dashboard/__init__.py",
     "dashboard/app.py",
     "dashboard/office_floor.html",
@@ -49,7 +56,8 @@ TRACKED_FILES = [
     "scripts/sync_to_github.py",
     "scripts/render_tiled_office.py",
     "scripts/slice_cast.py",
-    "tests/test_kernel.py"
+    "tests/test_kernel.py",
+    "tests/test_publishing.py"
 ]
 
 
