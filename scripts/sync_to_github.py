@@ -17,6 +17,7 @@ REPO = "gurugangadhar/Munder-Os"
 BRANCH = "main"
 
 TRACKED_FILES = [
+    ".github/workflows/autonomous_ci.yml",
     ".gitignore",
     ".env.example",
     "README.md",
