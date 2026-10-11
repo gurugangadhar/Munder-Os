@@ -32,6 +32,7 @@ TRACKED_FILES = [
     "core/registry.py",
     "dashboard/__init__.py",
     "dashboard/app.py",
+    "dashboard/office_floor.html",
     "scripts/verify_env.py",
     "scripts/sync_to_github.py",
     "tests/test_kernel.py"
