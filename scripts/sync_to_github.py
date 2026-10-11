@@ -26,6 +26,7 @@ TRACKED_FILES = [
     "config/system.yaml",
     "core/__init__.py",
     "core/database.py",
+    "core/llm.py",
     "core/models.py",
     "core/orchestrator.py",
     "core/queue.py",
