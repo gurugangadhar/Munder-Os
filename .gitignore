@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Munder Difflin Runtime & State Data
+data/
+*.db
+*.db-wal
+*.db-shm
+*.log
+
+# Secrets & Local Tokens
+.env
+config/tokens/
+config/credentials/
+*.pem
+*.key
+
+# Temporary Assets & Artifacts
+test_speech.mp3
+test_render.mp4
+tools/ffmpeg/
+
+# Legacy Archive
+_archive_legacy_digest/
+
+# IDE & OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
