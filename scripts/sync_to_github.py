@@ -49,6 +49,9 @@ TRACKED_FILES = [
     "core/publishing/instagram.py",
     "core/publishing/pinterest.py",
     "core/publishing/manager.py",
+    "core/scheduler/__init__.py",
+    "core/scheduler/cadence.py",
+    "core/scheduler/engine.py",
     "dashboard/__init__.py",
     "dashboard/app.py",
     "dashboard/office_floor.html",
@@ -57,7 +60,8 @@ TRACKED_FILES = [
     "scripts/render_tiled_office.py",
     "scripts/slice_cast.py",
     "tests/test_kernel.py",
-    "tests/test_publishing.py"
+    "tests/test_publishing.py",
+    "tests/test_scheduler.py"
 ]
 
 
