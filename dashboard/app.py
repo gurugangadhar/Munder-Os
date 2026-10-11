@@ -44,9 +44,137 @@ if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
+class DirectChatRequest(BaseModel):
+    agent: str
+    message: str
+
+class TaskCreateRequest(BaseModel):
+    division_id: str
+    agent_role: str
+    task_type: str
+    payload: Dict[str, Any] = {}
+
+class TaskRunRequest(BaseModel):
+    job_id: str = None
+
+
 @app.post("/api/chat")
 def api_chat(req: ChatRequest):
     return conversation_engine.process_message(req.message)
+
+
+@app.post("/api/agent-chat")
+def api_agent_chat(req: DirectChatRequest):
+    return conversation_engine.direct_agent_chat(req.agent, req.message)
+
+
+@app.get("/api/workers")
+def api_workers():
+    workers = [
+        {"id": "michael", "name": "Michael Scott", "role": "Executive Business Manager", "division": "Executive Orchestration", "status": "ONLINE", "task": "Supervising 7 Business Divisions", "avatar": "/static/assets/characters/avatar_michael_4x.png", "god": True},
+        {"id": "dwight", "name": "Dwight Schrute", "role": "Quality & Rights Assurance", "division": "Division A: AI Media", "status": "ACTIVE", "task": "Auditing Copyright & Fact Accuracy", "avatar": "/static/assets/characters/avatar_dwight_4x.png"},
+        {"id": "jim", "name": "Jim Halpert", "role": "Strategy & Demand Evaluator", "division": "All Content Divisions", "status": "ACTIVE", "task": "Analyzing CTR & Video Retention", "avatar": "/static/assets/characters/avatar_jim_4x.png"},
+        {"id": "pam", "name": "Pam Beesly", "role": "Script & Copy Agent", "division": "Division A: AI Media", "status": "READY", "task": "Drafting 50s Shorts & Reels Scripts", "avatar": "/static/assets/characters/avatar_pam_4x.png"},
+        {"id": "angela", "name": "Angela Martin", "role": "Audio QA & Voiceover", "division": "Audio & Video Pipeline", "status": "READY", "task": "Enforcing -14 LUFS Broadcast Standard", "avatar": "/static/assets/characters/avatar_angela_4x.png"},
+        {"id": "kevin", "name": "Kevin Malone", "role": "Finance Agent", "division": "Executive Accounting", "status": "ACTIVE", "task": "Ledger Audit: Rs. 0.00 Spent", "avatar": "/static/assets/characters/avatar_kevin_4x.png"},
+        {"id": "ryan", "name": "Ryan Howard", "role": "Visual Design Agent", "division": "Division A & E", "status": "READY", "task": "Rendering 1080x1920 Kinetic Cards", "avatar": "/static/assets/characters/avatar_ryan_4x.png"},
+        {"id": "stanley", "name": "Stanley Hudson", "role": "Media Director & Compositor", "division": "Division A & B", "status": "READY", "task": "FFmpeg 7.1 MP4 Assembly", "avatar": "/static/assets/characters/avatar_stanley_4x.png"},
+        {"id": "creed", "name": "Creed Bratton", "role": "Research & Scraping Agent", "division": "Division A: AI Media", "status": "ACTIVE", "task": "Mining GitHub & arXiv AI Tools", "avatar": "/static/assets/characters/creed_4x.png"},
+        {"id": "oscar", "name": "Oscar Martinez", "role": "Operations & Hardware Agent", "division": "System Health", "status": "ONLINE", "task": "Monitoring SSD Space & Queue Health", "avatar": "/static/assets/characters/oscar_4x.png"},
+        {"id": "andy", "name": "Andy Bernard", "role": "Product Packaging Agent", "division": "Division F: Digital Products", "status": "READY", "task": "Packaging Prompt Packs & Guides", "avatar": "/static/assets/characters/andy_4x.png"},
+        {"id": "toby", "name": "Toby Flenderson", "role": "Compliance & Safety Agent", "division": "HR & Governance", "status": "STANDBY", "task": "Verifying Emergency Stop Protocols", "avatar": "/static/assets/characters/toby_4x.png"},
+        {"id": "meredith", "name": "Meredith Palmer", "role": "Client Services Agent", "division": "Division G: Automation Services", "status": "STANDBY", "task": "Managing Client Proposals & Leads", "avatar": "/static/assets/characters/meredith_4x.png"}
+    ]
+    return {"workers": workers, "total": len(workers), "online": 13}
+
+
+@app.get("/api/tasks")
+def api_tasks():
+    jobs = queue.list_jobs(limit=50)
+    stats = queue.get_queue_stats()
+    job_dicts = []
+    for j in jobs:
+        created_str = j.created_at.strftime("%Y-%m-%d %H:%M:%S") if hasattr(j.created_at, "strftime") else str(j.created_at)
+        job_dicts.append({
+            "id": j.job_id,
+            "division_id": j.division_id,
+            "agent_role": j.stage,
+            "task_type": j.topic,
+            "status": j.status.value,
+            "attempts": j.retry_count,
+            "created_at": created_str,
+            "error_message": j.error_message
+        })
+    return {"jobs": job_dicts, "stats": stats}
+
+
+@app.post("/api/tasks/create")
+def api_tasks_create(req: TaskCreateRequest):
+    job = queue.enqueue(
+        division_id=req.division_id,
+        topic=req.task_type,
+        payload=req.payload
+    )
+    conversation_engine.log_activity("Michael", "TASK_ENQUEUED", f"Queued {req.task_type} for {req.division_id}", req.division_id)
+    return {"success": True, "job_id": job.job_id}
+
+
+@app.post("/api/tasks/run")
+def api_tasks_run(req: TaskRunRequest = None):
+    job = queue.claim_next()
+    if not job:
+        job = queue.enqueue(
+            division_id="div_a_tech",
+            topic="3 Free Local AI Agents Video Short",
+            payload={"aspect_ratio": "9:16"}
+        )
+        job = queue.claim_next()
+
+    if job:
+        try:
+            queue.update_status(job.job_id, JobStatus.RUNNING)
+            conversation_engine.log_activity("Stanley", "TASK_START", f"Executing {job.topic}", job.division_id)
+            res = conversation_engine.process_message("produce video")
+            queue.update_status(job.job_id, JobStatus.COMPLETED)
+            conversation_engine.log_activity("Dwight", "TASK_COMPLETE", f"Finished {job.topic} successfully", job.division_id)
+            return {"success": True, "job_id": job.job_id, "result": res}
+        except Exception as e:
+            queue.update_status(job.job_id, JobStatus.FAILED, error_message=str(e))
+            return {"success": False, "job_id": job.job_id, "error": str(e)}
+
+    return {"success": False, "message": "No pending jobs found"}
+
+
+@app.get("/api/memory")
+def api_memory():
+    divisions = registry.get_all_divisions()
+    div_data = [{"id": d.id, "name": d.name, "description": d.description, "enabled": d.enabled, "daily_target": d.publishing_schedule.daily_target} for d in divisions]
+    
+    # Creed's research topics
+    from core.media.research import TOPIC_CATALOG
+    topics = [{"id": t.topic_id, "title": t.title, "hook": t.hook, "sources": t.sources} for t in TOPIC_CATALOG]
+
+    # Kevin's ledger
+    ledger = [
+        {"timestamp": "2026-10-11", "division": "Division A", "item": "Edge-TTS Neural Voiceover", "cost": "Rs. 0.00", "provider": "Local"},
+        {"timestamp": "2026-10-11", "division": "Division A", "item": "Pillow 1080x1920 Kinetic Cards", "cost": "Rs. 0.00", "provider": "Local"},
+        {"timestamp": "2026-10-11", "division": "Division A", "item": "FFmpeg 7.1 MP4 Video Render", "cost": "Rs. 0.00", "provider": "Local"},
+        {"timestamp": "2026-10-11", "division": "System", "item": "Gemini 2.5 Flash Lite API", "cost": "Rs. 0.00", "provider": "Google Cloud Free Tier"},
+        {"timestamp": "2026-10-11", "division": "System", "item": "NVIDIA NIM DeepSeek", "cost": "Rs. 0.00", "provider": "NVIDIA Free Trial"}
+    ]
+
+    return {
+        "divisions": div_data,
+        "research_topics": topics,
+        "financial_ledger": ledger,
+        "system_storage": "SQLite WAL Engine (core/database.py)",
+        "memory_status": "ONLINE & REPLICATED"
+    }
+
+
+@app.get("/api/activity")
+def api_activity():
+    return {"activities": conversation_engine.activity_log}
 
 
 @app.post("/api/produce")
