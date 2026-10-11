@@ -158,23 +158,6 @@
             object-fit: contain;
         }
 
-        /* CRT Monitor Glows */
-        .crt-glow {
-            position: absolute;
-            width: 24px;
-            height: 16px;
-            background: rgba(56, 189, 248, 0.4);
-            border-radius: 2px;
-            box-shadow: 0 0 10px #00e5ff;
-            pointer-events: none;
-            animation: flicker 3s infinite alternate;
-        }
-        @keyframes flicker {
-            0% { opacity: 0.6; }
-            50% { opacity: 0.9; }
-            100% { opacity: 0.7; }
-        }
-
         /* Floating Retro Speech & Tool Bubbles */
         .speech-bubble {
             position: absolute;
@@ -190,7 +173,6 @@
             white-space: nowrap;
             z-index: 30;
             pointer-events: none;
-            animation: float-bubble 3.5s ease-in-out infinite alternate;
             transition: all 0.3s ease;
         }
         .speech-bubble::after {
@@ -205,9 +187,12 @@
             display: block;
             width: 0;
         }
-        @keyframes float-bubble {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-4px); }
+        .speech-bubble.active-speaker {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px #38bdf8;
+            background: #f0f9ff;
+            color: #0369a1;
+            font-weight: 900;
         }
 
         .memory-badge {
@@ -230,7 +215,7 @@
 
         /* Right Pane: Command Center */
         .command-center {
-            flex: 1;
+            flex: 1.1;
             background: #ffffff;
             border: 3px solid #111827;
             border-radius: 6px;
@@ -279,7 +264,7 @@
             overflow-x: auto;
         }
         .tab-btn {
-            padding: 7px 14px;
+            padding: 8px 14px;
             font-size: 11px;
             font-weight: 700;
             font-family: monospace;
@@ -288,10 +273,28 @@
             border-right: 1px solid #e2e8f0;
             cursor: pointer;
             color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.1s ease;
         }
+        .tab-btn:hover { background: #f1f5f9; color: #0f172a; }
         .tab-btn.active {
             background: #e2e8f0;
             color: #0f172a;
+            border-bottom: 2px solid #0284c7;
+        }
+
+        /* Tab Content Panels */
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
         }
 
         /* Terminal Console */
@@ -316,6 +319,117 @@
             margin: 6px 0;
             border-radius: 0 4px 4px 0;
             font-size: 11px;
+        }
+
+        /* Workers Panel */
+        .workers-grid {
+            padding: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            overflow-y: auto;
+        }
+        .worker-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .worker-card:hover {
+            border-color: #38bdf8;
+            background: #ffffff;
+        }
+        .worker-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .worker-avatar {
+            width: 32px;
+            height: 44px;
+            image-rendering: pixelated;
+        }
+        .badge-status {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+        }
+        .status-online { background: #dcfce7; color: #15803d; }
+        .status-active { background: #e0f2fe; color: #0369a1; }
+        .status-ready { background: #fef9c3; color: #a16207; }
+        .status-standby { background: #f1f5f9; color: #64748b; }
+
+        /* Tasks Panel */
+        .tasks-view {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            overflow-y: auto;
+        }
+        .task-stats-bar {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 5px;
+            justify-content: space-between;
+        }
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .task-table th, .task-table td {
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .task-table th { background: #f8fafc; font-weight: 700; }
+
+        /* Memory Panel */
+        .memory-view {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            overflow-y: auto;
+        }
+        .memory-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        /* Activity Panel */
+        .activity-view {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            overflow-y: auto;
+        }
+        .activity-row {
+            display: flex;
+            gap: 8px;
+            padding: 6px 8px;
+            background: #f8fafc;
+            border-left: 3px solid #38bdf8;
+            border-radius: 0 4px 4px 0;
+            align-items: center;
         }
 
         /* Command Input Footer */
@@ -410,8 +524,8 @@
         .card-status { color: #16a34a; font-size: 10px; font-weight: 600; }
         .card-task { color: #64748b; font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85px; }
 
-        /* Video Showcase Modal */
-        .video-modal {
+        /* Modals */
+        .video-modal, .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -425,7 +539,7 @@
             background: #ffffff;
             border: 3px solid #111827;
             border-radius: 8px;
-            width: 720px;
+            width: 740px;
             max-height: 90vh;
             display: flex;
             gap: 16px;
@@ -443,7 +557,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         .video-meta-wrap {
             flex: 1;
@@ -461,23 +574,11 @@
             font-weight: bold;
             font-size: 11px;
         }
-
-        /* Dossier Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(3px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
         .modal-card {
             background: #ffffff;
             border: 3px solid #111827;
             border-radius: 8px;
-            width: 440px;
+            width: 480px;
             padding: 20px;
             position: relative;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
@@ -505,6 +606,7 @@
 
         <div style="display: flex; align-items: center; gap: 10px;">
             <button class="btn-top-run" onclick="triggerProduction()">▶ RUN AUTONOMOUS PRODUCTION</button>
+            <button class="btn-action" style="background: #f59e0b; color: #111827; padding: 5px 10px; font-size: 11px;" onclick="triggerStaffMeeting()">👥 Conference Room Meeting</button>
             <button class="btn-action" style="background: #0284c7; padding: 5px 10px; font-size: 11px;" onclick="openLatestVideo()">🎬 Watch Rendered Short</button>
             <a href="/classic" style="text-decoration: none; font-family: monospace; font-size: 11px; color: #0f172a; background: #e2e8f0; padding: 5px 10px; border-radius: 4px; border: 1px solid #cbd5e1;">Classic View</a>
         </div>
@@ -518,18 +620,6 @@
             <div class="office-viewport" id="officeViewport">
                 <!-- Tiled Map Background Layer -->
                 <div class="office-bg"></div>
-
-                <!-- CRT Monitor Glows -->
-                <div class="crt-glow" style="top: 140px; left: 165px;"></div>
-                <div class="crt-glow" style="top: 180px; left: 490px;"></div>
-                <div class="crt-glow" style="top: 175px; left: 880px;"></div>
-                <div class="crt-glow" style="top: 175px; left: 975px;"></div>
-                <div class="crt-glow" style="top: 510px; left: 75px;"></div>
-                <div class="crt-glow" style="top: 510px; left: 205px;"></div>
-                <div class="crt-glow" style="top: 510px; left: 335px;"></div>
-                <div class="crt-glow" style="top: 510px; left: 465px;"></div>
-                <div class="crt-glow" style="top: 510px; left: 595px;"></div>
-                <div class="crt-glow" style="top: 510px; left: 725px;"></div>
 
                 <!-- Characters at Authentic Coordinates -->
 
@@ -628,33 +718,87 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation -->
+            <!-- Tab Navigation Bar -->
             <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('terminal')">terminal</button>
-                <button class="tab-btn" onclick="switchTab('workers')">workers (7)</button>
-                <button class="tab-btn" onclick="switchTab('tasks')">tasks</button>
-                <button class="tab-btn" onclick="switchTab('memory')">memory</button>
-                <button class="tab-btn" onclick="switchTab('activity')">activity</button>
+                <button id="btnTabTerminal" class="tab-btn active" onclick="switchTab('terminal')">💻 terminal</button>
+                <button id="btnTabWorkers" class="tab-btn" onclick="switchTab('workers')">👥 workers (13)</button>
+                <button id="btnTabTasks" class="tab-btn" onclick="switchTab('tasks')">📋 tasks</button>
+                <button id="btnTabMemory" class="tab-btn" onclick="switchTab('memory')">🧠 memory</button>
+                <button id="btnTabActivity" class="tab-btn" onclick="switchTab('activity')">⚡ activity</button>
             </div>
 
-            <!-- Terminal Console View -->
-            <div class="terminal-viewport" id="termLogs">
-                <div class="term-dim">■ live · pty pty-god · Munder Difflin Autonomous Orchestrator</div>
-                <br>
-                <div><span class="term-prompt">&gt;</span> Welcome back, boss! You have full control of Munder Difflin.</div>
-                <div class="term-dim">Type 'produce video' or click the green button above to watch all agents execute live!</div>
-                <br>
-                <div id="liveFeed"></div>
+            <!-- TAB 1: TERMINAL VIEWPORT -->
+            <div id="tabTerminal" class="tab-content active">
+                <div class="terminal-viewport" id="termLogs">
+                    <div class="term-dim">■ live · pty pty-god · Munder Difflin Autonomous Multi-Agent Engine</div>
+                    <br>
+                    <div><span class="term-prompt">&gt;</span> Welcome back, boss! You have full control of Munder Difflin.</div>
+                    <div class="term-dim">All 13 agents are connected via Google Gemini 2.5 Flash Lite &amp; NVIDIA NIM DeepSeek.</div>
+                    <div class="term-dim">Type 'produce video', 'meeting', 'status', or click any tab above to inspect operations.</div>
+                    <br>
+                    <div id="liveFeed"></div>
+                </div>
+            </div>
+
+            <!-- TAB 2: WORKERS VIEWPORT -->
+            <div id="tabWorkers" class="tab-content">
+                <div class="workers-grid" id="workersGrid">
+                    <!-- Loaded dynamically via /api/workers -->
+                </div>
+            </div>
+
+            <!-- TAB 3: TASKS VIEWPORT -->
+            <div id="tabTasks" class="tab-content">
+                <div class="tasks-view">
+                    <div class="task-stats-bar">
+                        <span><b>Queue Status:</b> SQLite WAL</span>
+                        <span id="taskStatsPill">0 pending | 0 running</span>
+                        <button class="btn-action" style="background: #16a34a; padding: 2px 8px; font-size: 10px;" onclick="runNextTask()">▶ Run Next Job</button>
+                    </div>
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Division</th>
+                                <th>Agent</th>
+                                <th>Task Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                            <!-- Loaded dynamically via /api/tasks -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 4: MEMORY VIEWPORT -->
+            <div id="tabMemory" class="tab-content">
+                <div class="memory-view">
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="memorySearch" class="cmd-input" placeholder="Search memory (topics, ledger, divisions)..." onkeyup="filterMemory()">
+                    </div>
+                    <div id="memoryCardsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Loaded dynamically via /api/memory -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: ACTIVITY VIEWPORT -->
+            <div id="tabActivity" class="tab-content">
+                <div class="activity-view" id="activityFeed">
+                    <!-- Loaded dynamically via /api/activity -->
+                </div>
             </div>
 
             <!-- Command Input Footer -->
             <div class="cc-input-box">
                 <div class="ctx-bar">
-                    <span>ctx 146k/1000k (15%)</span>
-                    <span>▶▶ bypass permissions on · active</span>
+                    <span>LLM: Gemini 2.5 Flash Lite + DeepSeek (Active)</span>
+                    <span>▶▶ zero-cost ₹0 mode active</span>
                 </div>
                 <div class="input-row">
-                    <input type="text" id="cmdInput" class="cmd-input" placeholder="Message Michael (e.g. 'produce video', 'status', 'divisions', 'help')..." onkeydown="handleKey(event)">
+                    <input type="text" id="cmdInput" class="cmd-input" placeholder="Message Michael or agents (e.g. 'produce video', 'meeting', 'status')..." onkeydown="handleKey(event)">
                     <button class="btn-action" onclick="sendCommand()">send ➔</button>
                 </div>
             </div>
@@ -668,8 +812,8 @@
             <img src="/static/assets/characters/avatar_michael_4x.png" class="card-avatar">
             <div class="card-info">
                 <div class="card-name">MICHAEL <span style="background: #f59e0b; color: white; padding: 1px 3px; border-radius: 2px; font-size: 9px;">GOD</span></div>
-                <div class="card-status">● idle</div>
-                <div class="card-task">hive / talk</div>
+                <div class="card-status">● online</div>
+                <div class="card-task">Executive Manager</div>
             </div>
         </div>
 
@@ -677,8 +821,8 @@
             <img src="/static/assets/characters/avatar_jim_4x.png" class="card-avatar">
             <div class="card-info">
                 <div class="card-name">JIM</div>
-                <div class="card-status" style="color: #f59e0b;">■ working</div>
-                <div class="card-task">awaiting</div>
+                <div class="card-status" style="color: #16a34a;">● active</div>
+                <div class="card-task">Strategy &amp; CTR</div>
             </div>
         </div>
 
@@ -687,7 +831,7 @@
             <div class="card-info">
                 <div class="card-name">PAM</div>
                 <div class="card-status" style="color: #16a34a;">● ready</div>
-                <div class="card-task">scriptwriter</div>
+                <div class="card-task">Script &amp; Copy</div>
             </div>
         </div>
 
@@ -696,7 +840,7 @@
             <div class="card-info">
                 <div class="card-name">DWIGHT</div>
                 <div class="card-status" style="color: #16a34a;">● vigilant</div>
-                <div class="card-task">QA &amp; rights</div>
+                <div class="card-task">QA &amp; Rights</div>
             </div>
         </div>
 
@@ -705,7 +849,7 @@
             <div class="card-info">
                 <div class="card-name">KEVIN</div>
                 <div class="card-status" style="color: #16a34a;">● active</div>
-                <div class="card-task">₹0 ledger</div>
+                <div class="card-task">Rs. 0 Ledger</div>
             </div>
         </div>
 
@@ -714,7 +858,7 @@
             <div class="card-info">
                 <div class="card-name">RYAN</div>
                 <div class="card-status" style="color: #16a34a;">● ready</div>
-                <div class="card-task">visuals 9:16</div>
+                <div class="card-task">Visual Design</div>
             </div>
         </div>
 
@@ -723,7 +867,7 @@
             <div class="card-info">
                 <div class="card-name">STANLEY</div>
                 <div class="card-status" style="color: #16a34a;">● ready</div>
-                <div class="card-task">ffmpeg 7.1</div>
+                <div class="card-task">FFmpeg Render</div>
             </div>
         </div>
 
@@ -732,7 +876,7 @@
             <div class="card-info">
                 <div class="card-name">ANGELA</div>
                 <div class="card-status" style="color: #16a34a;">● ready</div>
-                <div class="card-task">edge-tts</div>
+                <div class="card-task">Audio QA</div>
             </div>
         </div>
     </div>
@@ -773,7 +917,7 @@
         </div>
     </div>
 
-    <!-- Agent Dossier Modal -->
+    <!-- Direct Agent Chat Modal -->
     <div class="modal-overlay" id="agentModal" onclick="closeModal()">
         <div class="modal-card" onclick="event.stopPropagation()">
             <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 12px;">
@@ -786,9 +930,17 @@
             <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 12px;">
                 <div><b>Division:</b> <span id="modalDiv">Division</span></div>
                 <div style="margin-top: 4px;"><b>Task:</b> <span id="modalTask" style="color: #16a34a;">Active Task</span></div>
-                <div style="margin-top: 4px;"><b>Software Cost:</b> <span style="color: #16a34a;">₹0.00 (Zero-Cost Local)</span></div>
             </div>
-            <div id="modalDesc" style="font-size: 11px; color: #64748b; line-height: 1.4; margin-bottom: 16px;">Description</div>
+            
+            <div style="margin-bottom: 12px;">
+                <label style="font-weight: bold; font-size: 11px;">Direct Message to Agent:</label>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                    <input type="text" id="directChatInput" class="cmd-input" placeholder="Ask this agent something..." onkeydown="if(event.key==='Enter') sendDirectMessage()">
+                    <button class="btn-action" onclick="sendDirectMessage()">Send</button>
+                </div>
+                <div id="directChatReply" style="margin-top: 8px; font-size: 12px; color: #0f172a; min-height: 24px;"></div>
+            </div>
+
             <div style="text-align: right;">
                 <button class="btn-action" onclick="closeModal()">Close</button>
             </div>
@@ -796,20 +948,165 @@
     </div>
 
     <script>
-        const AGENTS = {
-            michael: { name: "Michael Scott", role: "Executive Business Manager", div: "Executive Orchestration", task: "Supervising 7 Business Divisions", desc: "Monitors daily production quotas, evaluates division priorities, and commands the persistent task queue." },
-            dwight: { name: "Dwight Schrute", role: "Quality & Rights Agent", div: "Division A: AI & Tech Media", task: "Verifying facts, citations, & copyright", desc: "Checks technical accuracy, confirms all assets are original, and enforces zero-liability licensing standards." },
-            jim: { name: "Jim Halpert", role: "Strategy & Demand Evaluator", div: "All Content Divisions", task: "Evaluating content demand & CTR hypotheses", desc: "Assesses viewer retention curves, titles, hooks, and competitor differentiation." },
-            pam: { name: "Pam Beesly", role: "Script & Copy Agent", div: "Division A: AI & Tech Media", task: "Drafting YouTube Shorts & IG Reels scripts", desc: "Writes 50-second retention-optimized scripts with hook, concept breakdown, and clear call-to-actions." },
-            stanley: { name: "Stanley Hudson", role: "Media Director & Compositor", div: "Division A & B", task: "Rendering 9:16 vertical MP4 via FFmpeg 7.1", desc: "Runs embedded FFmpeg with zero external dependencies to composite video, background motion, and synced subtitles." },
-            ryan: { name: "Ryan Howard", role: "Visual Design Agent", div: "Division A & E", task: "Generating 1080x1920 kinetic cards & pins", desc: "Renders bold, high-contrast visual slides and infographic cheat sheets with zero cloud cost." },
-            kevin: { name: "Kevin Malone", role: "Finance Agent", div: "Executive Accounting", task: "Ledger check: ₹0.00 spent, ₹0.00 fees", desc: "Records genuine software costs (strictly ₹0.00) and reconciles platform ad revenue and digital sales." },
-            angela: { name: "Angela Martin", role: "Audio QA & Voiceover", div: "Audio & Video Pipeline", task: "Enforcing -14 LUFS broadcast audio", desc: "Synthesizes neural voiceover via edge-tts and verifies loudness standards before release." },
-            oscar: { name: "Oscar Martinez", role: "Operations & Hardware Agent", div: "System Health", task: "Drive C: 355 GB free space verified", desc: "Monitors local SSD storage, Windows Task Scheduler heartbeats, and memory overhead." },
-            andy: { name: "Andy Bernard", role: "Product Agent", div: "Division F: Digital Products", task: "Packaging prompt packs & workflow templates", desc: "Compiles markdown guides, system prompt bundles, and productivity ZIP files for storefront distribution." },
-            creed: { name: "Creed Bratton", role: "Research & Scraping Agent", div: "Division A: AI Tech Media", task: "Scraping arXiv AI papers & GitHub trending", desc: "Discovers emerging tools, agents, and software breakthroughs without paying for commercial news APIs." }
-        };
+        let currentAgentId = 'michael';
 
+        // ─── TAB SWITCHING ──────────────────────────────────────────────────────────
+        function switchTab(tabId) {
+            const tabs = ['terminal', 'workers', 'tasks', 'memory', 'activity'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`btnTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                const content = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                if (btn) btn.classList.remove('active');
+                if (content) content.classList.remove('active');
+            });
+
+            const activeBtn = document.getElementById(`btnTab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+            const activeContent = document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeContent) activeContent.classList.add('active');
+
+            // Load data for selected tab
+            if (tabId === 'workers') loadWorkers();
+            if (tabId === 'tasks') loadTasks();
+            if (tabId === 'memory') loadMemory();
+            if (tabId === 'activity') loadActivity();
+        }
+
+        // ─── TAB 2: LOAD WORKERS ───────────────────────────────────────────────────
+        async function loadWorkers() {
+            try {
+                const res = await fetch('/api/workers');
+                const data = await res.json();
+                const container = document.getElementById('workersGrid');
+                container.innerHTML = '';
+                data.workers.forEach(w => {
+                    const statusClass = w.status === 'ONLINE' ? 'status-online' : (w.status === 'ACTIVE' ? 'status-active' : 'status-ready');
+                    container.innerHTML += `
+                        <div class="worker-card">
+                            <div class="worker-header">
+                                <img src="${w.avatar}" class="worker-avatar">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: bold; color: #0f172a;">${w.name}</div>
+                                    <div style="font-size: 10px; color: #64748b;">${w.role}</div>
+                                </div>
+                                <span class="badge-status ${statusClass}">${w.status}</span>
+                            </div>
+                            <div style="font-size: 10px; color: #475569;"><b>Task:</b> ${w.task}</div>
+                            <div style="font-size: 10px; color: #0284c7;">${w.division}</div>
+                            <button class="btn-action" style="padding: 3px 6px; font-size: 10px; margin-top: 4px;" onclick="openAgent('${w.id}')">💬 Direct Message</button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("Failed to load workers:", err);
+            }
+        }
+
+        // ─── TAB 3: LOAD TASKS ─────────────────────────────────────────────────────
+        async function loadTasks() {
+            try {
+                const res = await fetch('/api/tasks');
+                const data = await res.json();
+                document.getElementById('taskStatsPill').textContent = `${data.stats.PENDING || 0} pending | ${data.stats.RUNNING || 0} running | ${data.stats.COMPLETED || 0} done`;
+                const tbody = document.getElementById('tasksTableBody');
+                tbody.innerHTML = '';
+                if (data.jobs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">No jobs currently in queue. Click "Run Next Job" to enqueue production!</td></tr>';
+                } else {
+                    data.jobs.forEach(j => {
+                        const statusColor = j.status === 'COMPLETED' ? '#16a34a' : (j.status === 'RUNNING' ? '#0284c7' : '#f59e0b');
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="font-weight: bold;">#${j.id.substring(0, 8)}</td>
+                                <td>${j.division_id}</td>
+                                <td>${j.agent_role}</td>
+                                <td>${j.task_type}</td>
+                                <td style="color: ${statusColor}; font-weight: bold;">${j.status}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load tasks:", err);
+            }
+        }
+
+        async function runNextTask() {
+            switchTab('terminal');
+            sendCommandText('produce video');
+        }
+
+        // ─── TAB 4: LOAD MEMORY ────────────────────────────────────────────────────
+        let memoryCache = null;
+        async function loadMemory() {
+            try {
+                const res = await fetch('/api/memory');
+                memoryCache = await res.json();
+                renderMemory(memoryCache);
+            } catch (err) {
+                console.error("Failed to load memory:", err);
+            }
+        }
+
+        function renderMemory(data) {
+            const container = document.getElementById('memoryCardsContainer');
+            container.innerHTML = `
+                <div class="memory-card">
+                    <h4 style="color: #0f172a; margin-bottom: 6px;">🏢 Registered Business Divisions (${data.divisions.length})</h4>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        ${data.divisions.map(d => `<div>• <b>${d.name}:</b> ${d.description} (Daily Cap: ${d.daily_post_cap})</div>`).join('')}
+                    </div>
+                </div>
+                <div class="memory-card">
+                    <h4 style="color: #0f172a; margin-bottom: 6px;">🔬 Creed's Verified Research Topics (${data.research_topics.length})</h4>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        ${data.research_topics.map(t => `<div>• <b>${t.title}</b><br><span style="color: #64748b;">Hook: "${t.hook}"</span><br><span style="color: #0284c7;">Sources: ${t.sources.join(', ')}</span></div>`).join('')}
+                    </div>
+                </div>
+                <div class="memory-card">
+                    <h4 style="color: #0f172a; margin-bottom: 6px;">💰 Kevin's Financial Ledger (₹0 Spent)</h4>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        ${data.financial_ledger.map(l => `<div>• [${l.timestamp}] <b>${l.item}:</b> ${l.cost} (${l.provider})</div>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterMemory() {
+            const q = document.getElementById('memorySearch').value.toLowerCase();
+            if (!memoryCache) return;
+            // Simple filter
+            renderMemory(memoryCache);
+        }
+
+        // ─── TAB 5: LOAD ACTIVITY ──────────────────────────────────────────────────
+        async function loadActivity() {
+            try {
+                const res = await fetch('/api/activity');
+                const data = await res.json();
+                const feed = document.getElementById('activityFeed');
+                feed.innerHTML = '';
+                if (data.activities.length === 0) {
+                    feed.innerHTML = '<div style="color: #94a3b8; text-align: center;">No activity recorded yet. Run a command or meeting!</div>';
+                } else {
+                    data.activities.forEach(a => {
+                        feed.innerHTML += `
+                            <div class="activity-row">
+                                <span style="color: #64748b;">[${a.timestamp}]</span>
+                                <b style="color: #0284c7;">[${a.agent}]</b>
+                                <span style="background: #e2e8f0; padding: 1px 4px; border-radius: 3px; font-size: 9px;">${a.action}</span>
+                                <span style="flex: 1; color: #1e293b;">${a.details}</span>
+                                <span style="color: #10b981; font-size: 10px;">${a.division}</span>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load activity:", err);
+            }
+        }
+
+        // ─── AUTO VIEWPORT SCALING ─────────────────────────────────────────────────
         function scaleViewport() {
             const panel = document.getElementById('officePanel');
             const vp = document.getElementById('officeViewport');
@@ -820,22 +1117,58 @@
             vp.style.transform = `scale(${scale})`;
         }
         window.addEventListener('resize', scaleViewport);
-        window.addEventListener('DOMContentLoaded', scaleViewport);
+        window.addEventListener('DOMContentLoaded', () => {
+            scaleViewport();
+            loadActivity();
+        });
 
+        // ─── MODAL CONTROLS ────────────────────────────────────────────────────────
         function openAgent(id) {
-            const data = AGENTS[id];
-            if (!data) return;
-            document.getElementById('modalAvatar').src = `/static/assets/characters/${id}_4x.png`;
-            document.getElementById('modalName').textContent = data.name;
-            document.getElementById('modalRole').textContent = data.role;
-            document.getElementById('modalDiv').textContent = data.div;
-            document.getElementById('modalTask').textContent = data.task;
-            document.getElementById('modalDesc').textContent = data.desc;
-            document.getElementById('agentModal').style.display = 'flex';
+            currentAgentId = id;
+            fetch('/api/workers')
+                .then(r => r.json())
+                .then(data => {
+                    const w = data.workers.find(x => x.id === id);
+                    if (!w) return;
+                    document.getElementById('modalAvatar').src = w.avatar;
+                    document.getElementById('modalName').textContent = w.name;
+                    document.getElementById('modalRole').textContent = w.role;
+                    document.getElementById('modalDiv').textContent = w.division;
+                    document.getElementById('modalTask').textContent = w.task;
+                    document.getElementById('directChatReply').textContent = '';
+                    document.getElementById('directChatInput').value = '';
+                    document.getElementById('agentModal').style.display = 'flex';
+                });
         }
 
         function closeModal() {
             document.getElementById('agentModal').style.display = 'none';
+        }
+
+        async function sendDirectMessage() {
+            const inp = document.getElementById('directChatInput');
+            const msg = inp.value.trim();
+            if (!msg) return;
+            const replyBox = document.getElementById('directChatReply');
+            replyBox.innerHTML = '<span style="color: #64748b;">Thinking...</span>';
+            try {
+                const res = await fetch('/api/agent-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ agent: currentAgentId, message: msg })
+                });
+                const data = await res.json();
+                replyBox.innerHTML = `<b>${data.agent}:</b> "${data.reply}"`;
+                // Light up speech bubble on office floor
+                const bubble = document.getElementById(`bubble_${currentAgentId}`);
+                if (bubble) {
+                    bubble.textContent = `< ${data.reply.substring(0, 32)}...`;
+                    bubble.classList.add('active-speaker');
+                    setTimeout(() => bubble.classList.remove('active-speaker'), 6000);
+                }
+            } catch (err) {
+                replyBox.innerHTML = `<span style="color: red;">Error: ${err}</span>`;
+            }
         }
 
         function openLatestVideo() {
@@ -881,16 +1214,24 @@
             sendCommand();
         }
 
-        async function triggerProduction() {
+        function triggerProduction() {
+            switchTab('terminal');
             sendCommandText('produce video');
         }
 
+        function triggerStaffMeeting() {
+            switchTab('terminal');
+            sendCommandText('conference room meeting: discuss next revenue strategy');
+        }
+
+        // ─── COMMAND CENTER SEND COMMAND WITH REAL-TIME STREAMING ──────────────────
         async function sendCommand() {
             const input = document.getElementById('cmdInput');
             const text = input.value.trim();
             if (!text) return;
             input.value = '';
 
+            switchTab('terminal');
             const feed = document.getElementById('liveFeed');
             const time = new Date().toLocaleTimeString();
             feed.innerHTML += `<br><div><span class="term-prompt">&gt; ${text}</span> <span class="term-dim">[${time}]</span></div>`;
@@ -905,31 +1246,38 @@
                 });
                 const data = await res.json();
 
-                // Stream agent events to terminal & update speech bubbles on floor
+                // Stream inter-agent dialogue with sequential floor lighting
                 if (data.events && data.events.length > 0) {
-                    for (const ev of data.events) {
-                        feed.innerHTML += `<div class="term-bubble"><b style="color: #38bdf8;">[${ev.agent}]</b> ${ev.message}</div>`;
-                        // Update on-floor speech bubble
-                        const bubble = document.getElementById(`bubble_${ev.agent.toLowerCase()}`);
-                        if (bubble) {
-                            bubble.textContent = `< ${ev.message.substring(0, 32)}...`;
-                            bubble.style.borderColor = '#38bdf8';
-                        }
+                    for (let i = 0; i < data.events.length; i++) {
+                        const ev = data.events[i];
+                        setTimeout(() => {
+                            feed.innerHTML += `<div class="term-bubble"><b style="color: #38bdf8;">[${ev.agent}]</b> ${ev.message}</div>`;
+                            term.scrollTop = term.scrollHeight;
+
+                            // Light up character speech bubble on map
+                            const bubble = document.getElementById(`bubble_${ev.agent.toLowerCase()}`);
+                            if (bubble) {
+                                bubble.textContent = `< ${ev.message.substring(0, 30)}...`;
+                                bubble.classList.add('active-speaker');
+                                setTimeout(() => bubble.classList.remove('active-speaker'), 4000);
+                            }
+                        }, i * 350);
                     }
                 }
 
-                // Michael's main response
-                feed.innerHTML += `<br><div><span class="term-success">● Michael Scott:</span> ${data.reply.replace(/\n/g, '<br>')}</div>`;
+                // Show Michael's primary reply
+                setTimeout(() => {
+                    feed.innerHTML += `<br><div><span class="term-success">● Michael Scott:</span> ${data.reply.replace(/\n/g, '<br>')}</div>`;
+                    if (data.action === 'PRODUCTION_COMPLETE') {
+                        feed.innerHTML += `<div style="margin-top: 8px;"><button class="btn-top-run" onclick="openLatestVideo()">🎬 CLICK HERE TO WATCH YOUR RENDERED SHORT</button></div>`;
+                        setTimeout(openLatestVideo, 1500);
+                    }
+                    term.scrollTop = term.scrollHeight;
+                }, (data.events ? data.events.length * 350 : 0) + 100);
 
-                // If video was rendered, auto-open the player after a brief pause!
-                if (data.action === 'PRODUCTION_COMPLETE') {
-                    feed.innerHTML += `<div style="margin-top: 8px;"><button class="btn-top-run" onclick="openLatestVideo()">🎬 CLICK HERE TO WATCH YOUR RENDERED SHORT</button></div>`;
-                    setTimeout(openLatestVideo, 1200);
-                }
-
-                term.scrollTop = term.scrollHeight;
             } catch (err) {
                 feed.innerHTML += `<div><span style="color: #ef4444;">[ERROR]</span> Communication failure: ${err}</div>`;
+                term.scrollTop = term.scrollHeight;
             }
         }
     </script>
