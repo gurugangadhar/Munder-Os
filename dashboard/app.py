@@ -276,6 +276,47 @@ def api_publish(req: PublishRequest):
     return res.model_dump()
 
 
+from core.scheduler import AutonomousScheduler
+
+scheduler = AutonomousScheduler(
+    db=db,
+    registry=registry,
+    orchestrator=orchestrator,
+    queue=queue,
+    publishing_mgr=publishing_mgr,
+    tick_interval_seconds=60,
+    activity_logger=conversation_engine.log_activity
+)
+
+
+class SchedulerTriggerRequest(BaseModel):
+    division_id: str = "div_a_tech"
+    force: bool = True
+
+
+@app.get("/api/scheduler/status")
+def api_scheduler_status():
+    return scheduler.get_status()
+
+
+@app.post("/api/scheduler/start")
+def api_scheduler_start():
+    scheduler.start()
+    return {"status": "started", "is_running": scheduler.is_running}
+
+
+@app.post("/api/scheduler/stop")
+def api_scheduler_stop():
+    scheduler.stop()
+    return {"status": "stopped", "is_running": scheduler.is_running}
+
+
+@app.post("/api/scheduler/trigger")
+def api_scheduler_trigger(req: SchedulerTriggerRequest):
+    result = scheduler.run_division_cycle(req.division_id, force=req.force)
+    return result
+
+
 @app.get("/office-map", response_class=HTMLResponse)
 def get_office_map():
     map_path = os.path.join(os.path.dirname(__file__), "office_floor.html")
