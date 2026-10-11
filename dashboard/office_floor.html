@@ -726,6 +726,7 @@
                 <button id="btnTabMemory" class="tab-btn" onclick="switchTab('memory')">🧠 memory</button>
                 <button id="btnTabActivity" class="tab-btn" onclick="switchTab('activity')">⚡ activity</button>
                 <button id="btnTabPublish" class="tab-btn" onclick="switchTab('publish')">🚀 publish</button>
+                <button id="btnTabCadence" class="tab-btn" onclick="switchTab('cadence')">⏱️ cadence</button>
             </div>
 
             <!-- TAB 1: TERMINAL VIEWPORT -->
@@ -871,6 +872,59 @@
                                 <!-- Loaded dynamically -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: CADENCE VIEWPORT -->
+            <div id="tabCadence" class="tab-content">
+                <div class="cadence-view" style="padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto;">
+                    <!-- Cadence Loop Status Card -->
+                    <div style="background: #ffffff; border: 2px solid #0f172a; border-radius: 6px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <b style="font-size: 13px; font-family: monospace;">24/7 Autonomous Production Engine</b>
+                                <span id="cadenceStatusPill" style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; font-family: monospace;">PAUSED</span>
+                            </div>
+                            <div style="font-size: 11px; color: #64748b; font-family: monospace; margin-top: 4px;" id="cadenceMetricsText">
+                                Cycles: 0 | Successful: 0 | Failed: 0 | Cadence: 60s
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="btnToggleCadence" class="btn-action" style="background: #16a34a; padding: 6px 12px; font-size: 11px;" onclick="toggleCadenceLoop()">
+                                ▶ Start Autonomous Loop
+                            </button>
+                            <button class="btn-action" style="background: #0284c7; padding: 6px 12px; font-size: 11px;" onclick="triggerCadenceCycle()">
+                                ⚡ Trigger Cycle Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Division Cadence & Caps Table -->
+                    <div>
+                        <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 12px; font-family: monospace;">🏢 Division Cadence Matrix &amp; Daily Caps</h4>
+                        <table class="task-table">
+                            <thead>
+                                <tr>
+                                    <th>Division</th>
+                                    <th>Daily Output</th>
+                                    <th>Cap</th>
+                                    <th>Eligibility</th>
+                                    <th>Status Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cadenceMatrixTableBody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Recent Cadence Events -->
+                    <div>
+                        <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 12px; font-family: monospace;">⚡ Autonomous Scheduler Log</h4>
+                        <div id="cadenceEventsLog" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; max-height: 180px; overflow-y: auto; font-family: monospace; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+                            <!-- Loaded dynamically -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1036,7 +1090,7 @@
 
         // ─── TAB SWITCHING ──────────────────────────────────────────────────────────
         function switchTab(tabId) {
-            const tabs = ['terminal', 'workers', 'tasks', 'memory', 'activity', 'publish'];
+            const tabs = ['terminal', 'workers', 'tasks', 'memory', 'activity', 'publish', 'cadence'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`btnTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
                 const content = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
@@ -1055,6 +1109,113 @@
             if (tabId === 'memory') loadMemory();
             if (tabId === 'activity') loadActivity();
             if (tabId === 'publish') loadPublishTab();
+            if (tabId === 'cadence') loadCadenceTab();
+        }
+
+        // ─── TAB 7: LOAD CADENCE & SCHEDULER ───────────────────────────────────────
+        async function loadCadenceTab() {
+            try {
+                const res = await fetch('/api/scheduler/status');
+                const data = await res.json();
+
+                // Status Pill
+                const pill = document.getElementById('cadenceStatusPill');
+                const btn = document.getElementById('btnToggleCadence');
+                if (data.is_running) {
+                    pill.textContent = 'ONLINE (60s)';
+                    pill.style.background = '#dcfce7';
+                    pill.style.color = '#166534';
+                    btn.textContent = '⏹ Pause Autonomous Loop';
+                    btn.style.background = '#e11d48';
+                } else {
+                    pill.textContent = 'PAUSED';
+                    pill.style.background = '#fee2e2';
+                    pill.style.color = '#991b1b';
+                    btn.textContent = '▶ Start Autonomous Loop';
+                    btn.style.background = '#16a34a';
+                }
+
+                // Metrics Text
+                document.getElementById('cadenceMetricsText').textContent = 
+                    `Cycles: ${data.total_cycles} | Successful: ${data.successful_runs} | Failed: ${data.failed_runs} | Cadence: ${data.tick_interval_seconds}s`;
+
+                // Matrix Table
+                const tbody = document.getElementById('cadenceMatrixTableBody');
+                tbody.innerHTML = '';
+                data.divisions.forEach(d => {
+                    const eligBadge = d.is_eligible 
+                        ? '<span style="background: #dcfce7; color: #166534; padding: 1px 6px; border-radius: 4px; font-weight: bold;">ELIGIBLE</span>'
+                        : '<span style="background: #f1f5f9; color: #64748b; padding: 1px 6px; border-radius: 4px;">WAITING</span>';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${d.name}</b> (${d.id})</td>
+                            <td>${d.daily_produced} produced</td>
+                            <td>${d.daily_cap} / day</td>
+                            <td>${eligBadge}</td>
+                            <td style="color: #64748b; font-size: 10px;">${d.status_reason}</td>
+                        </tr>
+                    `;
+                });
+
+                // Events Log
+                const logBox = document.getElementById('cadenceEventsLog');
+                logBox.innerHTML = '';
+                if (!data.recent_events || data.recent_events.length === 0) {
+                    logBox.innerHTML = '<div style="color: #94a3b8; text-align: center;">No scheduler events recorded yet. Click "Start Autonomous Loop" or "Trigger Cycle Now"!</div>';
+                } else {
+                    data.recent_events.forEach(e => {
+                        logBox.innerHTML += `
+                            <div>
+                                <span style="color: #64748b;">[${e.timestamp}]</span>
+                                <b style="color: #0284c7;">[${e.agent}]</b>
+                                <span style="background: #e2e8f0; padding: 1px 4px; border-radius: 3px; font-size: 9px;">${e.action}</span>
+                                <span>${e.details}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+            } catch (err) {
+                console.error("Failed to load cadence status:", err);
+            }
+        }
+
+        async function toggleCadenceLoop() {
+            try {
+                const curRes = await fetch('/api/scheduler/status');
+                const curData = await curRes.json();
+                const endpoint = curData.is_running ? '/api/scheduler/stop' : '/api/scheduler/start';
+                await fetch(endpoint, { method: 'POST' });
+                loadCadenceTab();
+            } catch (err) {
+                alert("Failed to toggle cadence loop: " + err.message);
+            }
+        }
+
+        async function triggerCadenceCycle() {
+            const btn = event.target;
+            const origText = btn.textContent;
+            btn.textContent = "⏳ Producing...";
+            btn.disabled = true;
+            try {
+                const res = await fetch('/api/scheduler/trigger', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ division_id: 'div_a_tech', force: true })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ Autonomous cycle finished successfully!\n\nTopic: "${data.topic}"\nPublication: ${data.publication ? data.publication.canonical_url : 'Saved'}`);
+                } else {
+                    alert(`Production skipped or failed: ${data.reason || data.error}`);
+                }
+                loadCadenceTab();
+            } catch (err) {
+                alert("Cycle trigger failed: " + err.message);
+            } finally {
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
         }
 
         // ─── TAB 6: LOAD PUBLISHING ────────────────────────────────────────────────
