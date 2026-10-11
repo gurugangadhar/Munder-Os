@@ -13,7 +13,7 @@ truststore.inject_into_ssl()
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 import uvicorn
 from datetime import datetime
 
@@ -28,6 +28,15 @@ db = Database()
 registry = DivisionRegistry(db=db)
 queue = JobQueue(db=db)
 orchestrator = Orchestrator(db=db, queue=queue, registry=registry)
+
+
+@app.get("/office-map", response_class=HTMLResponse)
+def get_office_map():
+    map_path = os.path.join(os.path.dirname(__file__), "office_floor.html")
+    if os.path.exists(map_path):
+        with open(map_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Office floor map not found</h1>", status_code=404)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -259,6 +268,15 @@ def get_dashboard(request: Request):
                     <div style="font-size: 24px; font-weight: 800; color: #a855f7; margin-top: 4px;">{stats.get('READY_FOR_PUBLISH', 0)}</div>
                     <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Approved by Operator</div>
                 </div>
+            </div>
+
+            <!-- Virtual 2D Pixel-Art Office Floor -->
+            <div class="section-title">
+                <span>The Virtual Office Floor (Scranton HQ)</span>
+                <span style="font-size: 13px; font-weight: 450; color: #94a3b8;">Click any employee to inspect dossier</span>
+            </div>
+            <div style="margin-bottom: 32px; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; display: flex; justify-content: center; overflow-x: auto;">
+                <iframe src="/office-map" style="width: 100%; min-width: 980px; height: 630px; border: none; border-radius: 8px;"></iframe>
             </div>
 
             <!-- Business Division Registry -->
