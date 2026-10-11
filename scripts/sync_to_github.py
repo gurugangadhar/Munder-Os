@@ -30,11 +30,23 @@ TRACKED_FILES = [
     "core/orchestrator.py",
     "core/queue.py",
     "core/registry.py",
+    "core/agents/__init__.py",
+    "core/agents/conversation.py",
+    "core/media/__init__.py",
+    "core/media/research.py",
+    "core/media/scriptwriter.py",
+    "core/media/audio.py",
+    "core/media/visuals.py",
+    "core/media/compositor.py",
+    "core/media/qa.py",
+    "core/media/pipeline.py",
     "dashboard/__init__.py",
     "dashboard/app.py",
     "dashboard/office_floor.html",
     "scripts/verify_env.py",
     "scripts/sync_to_github.py",
+    "scripts/render_tiled_office.py",
+    "scripts/slice_cast.py",
     "tests/test_kernel.py"
 ]
 
